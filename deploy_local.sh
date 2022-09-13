@@ -6,10 +6,11 @@ git submodule update --init --recursive
 
 # Build all docker images
 cd PhaseNet; docker build --tag phasenet-api:1.0 . ; cd ..;
-cd GMMA; docker build --tag gmma-api:1.0 . ; cd ..;
+cd GaMMA; docker build --tag gmma-api:1.0 . ; cd ..;
 cd spark; docker build --tag quakeflow-spark:1.0 .; cd ..;
 cd waveform; docker build --tag quakeflow-waveform:1.0 .; cd ..;
 cd streamlit; docker build --tag quakeflow-streamlit:1.0 .; cd ..;
+cd ui; docker build --tag quakeflow-ui:1.0 .; cd ..;
 
 # Deploy Kafka with Helm, create client and add topics
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -28,8 +29,8 @@ helm upgrade quakeflow-kafka bitnami/kafka --set externalAccess.enabled=true,ext
 helm install quakeflow-mongodb --set auth.rootPassword=quakeflow123,auth.username=quakeflow,auth.password=quakeflow123,auth.database=quakeflow bitnami/mongodb
 
 # Deploy to Kubernetes
-kubectl apply -f metrics-server.yaml
-kubectl apply -f quakeflow-local.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+cd deployment; kubectl apply -f quakeflow-local.yaml; cd ..
 
 # Add autoscaling
 kubectl autoscale deployment phasenet-api --cpu-percent=80 --min=1 --max=10
